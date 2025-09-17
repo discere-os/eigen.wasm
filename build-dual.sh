@@ -62,8 +62,8 @@ build_side_module() {
         -DCMAKE_CXX_FLAGS="-O3 -flto -msimd128 -fPIC -DEIGEN_NO_IO -DEIGEN_DONT_VECTORIZE=0" \
         -DCMAKE_EXE_LINKER_FLAGS="-sSIDE_MODULE=1 -sSTANDALONE_WASM=1 -sUSE_WEBGPU=1"
 
-    # Build our WASM wrapper instead of full library
-    emcc ../wasm/eigen_wasm_side.cpp \
+    # Build our WASM wrapper with SIMD enhancements
+    emcc ../wasm/eigen_wasm_side.cpp ../wasm/eigen_wasm_simd.cpp \
         -I.. -I../Eigen \
         -O3 -flto -msimd128 -fPIC \
         -DEIGEN_NO_IO \
@@ -72,7 +72,7 @@ build_side_module() {
         -sSIDE_MODULE=1 \
         -sSTANDALONE_WASM=1 \
         -sUSE_WEBGPU=1 \
-        -sEXPORTED_FUNCTIONS='["_matrix_multiply","_matrix_multiply_simd","_vector_dot","_vector_dot_simd","_vector_dot_single","_matrix_invert","_matrix_decompose","_eigenvalues","_matrix_solve","_matrix_transpose","_matrix_determinant","_webgpu_available_check","_enable_simd"]' \
+        -sEXPORTED_FUNCTIONS='["_matrix_multiply","_matrix_multiply_simd","_vector_dot","_vector_dot_simd","_vector_dot_single","_matrix_invert","_matrix_decompose","_eigenvalues","_matrix_solve","_matrix_transpose","_matrix_determinant","_webgpu_available_check","_enable_simd","_simd_supported","_simd_dot_product_f32","_simd_matrix_multiply_f32","_simd_vector_sum_f32","_benchmark_simd_dot_product","_benchmark_simd_matrix_multiply"]' \
         -o eigen-side.wasm
 
     # Install artifacts
@@ -101,8 +101,8 @@ build_main_module() {
         -DCMAKE_CXX_FLAGS="-O3 -flto -msimd128 -DEIGEN_DONT_VECTORIZE=0" \
         -DCMAKE_EXE_LINKER_FLAGS="-sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME=EigenModule -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=67108864 -sMAXIMUM_MEMORY=536870912 -sUSE_WEBGPU=1 -sASYNCIFY=1"
 
-    # Build comprehensive MAIN_MODULE wrapper
-    emcc ../wasm/eigen_wasm_main.cpp \
+    # Build comprehensive MAIN_MODULE wrapper with SIMD enhancements
+    emcc ../wasm/eigen_wasm_main.cpp ../wasm/eigen_wasm_simd.cpp \
         -I.. -I../Eigen \
         -O3 -flto -msimd128 \
         -DEIGEN_DONT_VECTORIZE=0 \
@@ -110,11 +110,11 @@ build_main_module() {
         -sMODULARIZE=1 \
         -sEXPORT_ES6=1 \
         -sEXPORT_NAME="EigenModule" \
-        -sEXPORTED_FUNCTIONS='["_matrix_multiply","_matrix_multiply_simd","_vector_dot","_vector_dot_simd","_vector_dot_single","_matrix_invert","_matrix_decompose","_eigenvalues","_matrix_solve","_matrix_transpose","_matrix_determinant","_webgpu_available_check","_enable_simd","_malloc","_free","_memory_stats"]' \
+        -sEXPORTED_FUNCTIONS='["_matrix_multiply","_matrix_multiply_simd","_vector_dot","_vector_dot_simd","_vector_dot_single","_matrix_invert","_matrix_decompose","_eigenvalues","_matrix_solve","_matrix_transpose","_matrix_determinant","_webgpu_available_check","_enable_simd","_malloc","_free","_memory_stats","_simd_supported","_simd_dot_product_f32","_simd_matrix_multiply_f32","_simd_vector_sum_f32","_benchmark_simd_dot_product","_benchmark_simd_matrix_multiply"]' \
         -sEXPORTED_RUNTIME_METHODS='["cwrap","ccall","UTF8ToString","HEAPU8","HEAPF32","HEAPF64"]' \
         -sALLOW_MEMORY_GROWTH=1 \
-        -sINITIAL_MEMORY=67108864 \
-        -sMAXIMUM_MEMORY=536870912 \
+        -sINITIAL_MEMORY=134217728 \
+        -sMAXIMUM_MEMORY=1073741824 \
         -sUSE_WEBGPU=1 \
         -sASYNCIFY=1 \
         -o eigen-main.js

@@ -46,9 +46,19 @@ bool enable_simd(bool enable) {
     return old_state;
 }
 
-// SIMD-optimized matrix multiplication
+// SIMD-optimized matrix multiplication with memory safety
 EMSCRIPTEN_KEEPALIVE
 int matrix_multiply(double* a, double* b, double* result, int rows_a, int cols_a, int cols_b) {
+    if (!a || !b || !result || rows_a <= 0 || cols_a <= 0 || cols_b <= 0) {
+        return -1;
+    }
+
+    // Check for reasonable matrix sizes to prevent memory issues
+    long long total_elements = (long long)rows_a * cols_a + (long long)cols_a * cols_b + (long long)rows_a * cols_b;
+    if (total_elements > 1000000) {  // Limit to ~1M elements total
+        return -3; // Matrix too large
+    }
+
     try {
         Map<MatrixXd> mat_a(a, rows_a, cols_a);
         Map<MatrixXd> mat_b(b, cols_a, cols_b);
@@ -63,6 +73,16 @@ int matrix_multiply(double* a, double* b, double* result, int rows_a, int cols_a
 
 EMSCRIPTEN_KEEPALIVE
 int matrix_multiply_simd(float* a, float* b, float* result, int rows_a, int cols_a, int cols_b) {
+    if (!a || !b || !result || rows_a <= 0 || cols_a <= 0 || cols_b <= 0) {
+        return -1;
+    }
+
+    // Check for reasonable matrix sizes
+    long long total_elements = (long long)rows_a * cols_a + (long long)cols_a * cols_b + (long long)rows_a * cols_b;
+    if (total_elements > 1000000) {  // Limit to ~1M elements total
+        return -3; // Matrix too large
+    }
+
     try {
         Map<MatrixXf> mat_a(a, rows_a, cols_a);
         Map<MatrixXf> mat_b(b, cols_a, cols_b);
@@ -111,6 +131,10 @@ float vector_dot_single(float* a, float* b, int size) {
 
 EMSCRIPTEN_KEEPALIVE
 int matrix_invert(double* matrix, double* result, int size) {
+    if (!matrix || !result || size <= 0 || size > 512) {  // Reasonable size limit
+        return -1;
+    }
+
     try {
         Map<MatrixXd> mat(matrix, size, size);
         Map<MatrixXd> inv(result, size, size);

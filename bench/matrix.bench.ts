@@ -46,15 +46,15 @@ Deno.bench("Matrix 64×64 multiply SIMD (float)", () => {
   eigen.multiply(a, b, true)
 })
 
-Deno.bench("Matrix 128×128 multiply (double)", () => {
-  const a = eigen.createMatrix(128, 128, { fill: 'random', seed: 42 })
-  const b = eigen.createMatrix(128, 128, { fill: 'random', seed: 43 })
+Deno.bench("Matrix 96×96 multiply (double)", () => {
+  const a = eigen.createMatrix(96, 96, { fill: 'random', seed: 42 })
+  const b = eigen.createMatrix(96, 96, { fill: 'random', seed: 43 })
   eigen.multiply(a, b)
 })
 
-Deno.bench("Matrix 128×128 multiply SIMD (float)", () => {
-  const a = eigen.createMatrix(128, 128, { fill: 'random', seed: 42, singlePrecision: true })
-  const b = eigen.createMatrix(128, 128, { fill: 'random', seed: 43, singlePrecision: true })
+Deno.bench("Matrix 96×96 multiply SIMD (float)", () => {
+  const a = eigen.createMatrix(96, 96, { fill: 'random', seed: 42, singlePrecision: true })
+  const b = eigen.createMatrix(96, 96, { fill: 'random', seed: 43, singlePrecision: true })
   eigen.multiply(a, b, true)
 })
 
@@ -167,16 +167,16 @@ Deno.bench("Eigenvalues 16×16 (with vectors)", () => {
 })
 
 // Matrix creation benchmarks
-Deno.bench("Create random matrix 128×128", () => {
-  eigen.createMatrix(128, 128, { fill: 'random', seed: Math.random() * 1000000 })
+Deno.bench("Create random matrix 96×96", () => {
+  eigen.createMatrix(96, 96, { fill: 'random', seed: Math.random() * 1000000 })
 })
 
-Deno.bench("Create identity matrix 128×128", () => {
-  eigen.createMatrix(128, 128, { fill: 'identity' })
+Deno.bench("Create identity matrix 96×96", () => {
+  eigen.createMatrix(96, 96, { fill: 'identity' })
 })
 
-Deno.bench("Create zeros matrix 256×256", () => {
-  eigen.createMatrix(256, 256, { fill: 'zeros' })
+Deno.bench("Create zeros matrix 128×128", () => {
+  eigen.createMatrix(128, 128, { fill: 'zeros' })
 })
 
 // Cleanup after benchmarks
